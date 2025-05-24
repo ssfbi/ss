@@ -1,12 +1,10 @@
+Clear-Host
 $SS = @"
-░▒▓████████▓▒░▒▓███████▓▒░░▒▓█▓▒░       ░▒▓███████▓▒░▒▓███████▓▒░      
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░             
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░             
-░▒▓██████▓▒░ ░▒▓███████▓▒░░▒▓█▓▒░       ░▒▓██████▓▒░░▒▓██████▓▒░       
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░     ░▒▓█▓▒░      
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░     ░▒▓█▓▒░      
-░▒▓█▓▒░      ░▒▓███████▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░▒▓███████▓▒░                                                                                                                              
-"@ 
+███████╗██████╗ ██╗    ███████╗███████╗    
+██╔════╝██╔══██╗██║    ██╔════╝██╔════╝    
+█████╗  ██████╔╝██║    ███████╗███████╗    
+██╔══╝  ██╔══██╗██║    ╚════██║╚════██║    
+██║     ██████╔╝██║    ███████║███████║
 Write-Host $SS -ForegroundColor Yellow
 $pecmdUrl = "https://github.com/NoDiff-del/JARs/releases/download/Jar/PECmd.exe"
 $xxstringsUrl = "https://github.com/NoDiff-del/JARs/releases/download/Jar/xxstrings64.exe"
@@ -51,3 +49,34 @@ if ($filteredFiles.Count -gt 0) {
                             Write-Host "Valid .jar file: $line" -ForegroundColor DarkGreen
                         }
                     }
+                } catch {
+                    if ($line -match "\.jar$") {
+                        Write-Host "File .jar deleted maybe: $line" -ForegroundColor DarkYellow
+                    }
+                }
+
+                if ($line -match "\.jar$" -and !(Test-Path $line)) {
+                    Write-Host "File .jar deleted maybe: $line" -ForegroundColor DarkYellow
+                }
+            }
+        } else {
+            Write-Host "No imports found for the file $($_.Name)." -ForegroundColor Red
+        }
+    }
+} else {
+    Write-Host "No PF files containing 'java' or 'javaw' and modified after logon time were found." -ForegroundColor Red
+}
+
+Write-Output " "
+Write-Host "Searching for DcomLaunch PID..." -ForegroundColor Gray
+
+$pidDcomLaunch = (Get-CimInstance -ClassName Win32_Service | Where-Object { $_.Name -eq 'DcomLaunch' }).ProcessId
+
+$xxstringsOutput = & $xxstringsPath -p $pidDcomLaunch -raw | findstr /C:"-jar"
+
+if ($xxstringsOutput) {
+    Write-Host "Strings found in DcomLaunch process memory containing '-jar':" -ForegroundColor DarkYellow
+    $xxstringsOutput | ForEach-Object { Write-Host $_ }
+} else {
+    Write-Host "No strings containing '-jar' were found in DcomLaunch process memory." -ForegroundColor Red
+}
