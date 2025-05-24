@@ -5,7 +5,8 @@ $SS = @"
 █████╗  ██████╔╝██║    ███████╗███████╗    
 ██╔══╝  ██╔══██╗██║    ╚════██║╚════██║    
 ██║     ██████╔╝██║    ███████║███████║
-Write-Host $SS -ForegroundColor Yellow
+"@ 
+Write-Host $SS -ForegroundColor DarkYellow
 $pecmdUrl = "https://github.com/NoDiff-del/JARs/releases/download/Jar/PECmd.exe"
 $xxstringsUrl = "https://github.com/NoDiff-del/JARs/releases/download/Jar/xxstrings64.exe"
 
